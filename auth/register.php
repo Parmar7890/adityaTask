@@ -255,12 +255,12 @@
 
   <script>
     $(document).ready(function () {
-      // $("#submit").click(function () {
+      $("#submit").click(function () {
         
-        // event.preventDefault();
-        // let isValid = $("#registerForm").valid();
-        // if(isValid){
-          submitHandler: function(form) {
+        event.preventDefault();
+        let isValid = $("#registerForm").valid();
+        if(isValid){
+          // submitHandler: function(form) {
           var frm = $("#registerForm").serializeArray();
           $.ajax({
             type: "POST",
@@ -290,7 +290,7 @@
         
 
 
-      // })
+      })
     })
 
   </script>

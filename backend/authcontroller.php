@@ -62,36 +62,17 @@ class Authcontroller{
     
     }
     
-
-
-
     function updateData($data) {
         // echo "<pre>";
         // echo "new";
-         print_r($data);
+        //  print_r($data);
         
         $response = [];
                try {
        
                    $sql = "UPDATE tbl_user SET full_name=:full_name,phone=:phone,email=:email,status=:status WHERE id=:id";
                   
-                //    $query  = $this->conn->prepare($sql);
-                //    $query->bindParam(':email', $data[3]['value']);
-                //    $query ->execute();
-                //    $result = $query->fetchColumn();
-                  
-                //    if($result > 0){
-                       
-                //        // echo "<pre>";
-                //        // print_r($result);
-                //        // echo "email is same";
-                //        $response["status"] = 200;
-                //        $response["message"] = "this email is allready register";
-                //    }  
-                    //    else{
-                    //    $stmt = $this->conn->prepare("INSERT INTO tbl_user (full_name, phone, email, status) VALUES(:full_name, :phone, :email, :status)");
-                       
-                    //    $full_name = $data[""].'-' .$data[1]['value'];
+
                     $stmt=$this->conn->prepare($sql);
                     $stmt->bindParam(':id',$data["id"]);
                $stmt->bindParam(':full_name', $data["full_name"]);
@@ -117,8 +98,25 @@ class Authcontroller{
        
        
 
+function deleteData($data){
+    print_r(explode(",",$data));
+    
+
+
+    try{
+
+    }catch(PDOException $e){
+        echo "error" .$e->getMessage();
+    }
 
 }
+}
+
+
+
+
+
+
 $frmData = json_decode(file_get_contents("php://input"), true);
 // echo "<pre>";
 // print_r($frmData);
@@ -143,7 +141,14 @@ if($frmData["action"] == "updateRow"){
      $obj->updateData($frmData["data"]);
 }
 
+if($frmData["action"] == "deleteRow"){
+    // echo "<pre>";
+    // print_r($frmData);
+    // echo "work";
 
+    $obj = new Authcontroller();
+    $obj->deleteData($frmData["data"]);
+}
 
 
 
