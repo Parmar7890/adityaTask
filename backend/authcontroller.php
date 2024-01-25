@@ -93,22 +93,33 @@ class Authcontroller{
          $response["message"] = "user not update";
                }
                echo json_encode($response);
-                    return $response;
+               return $response;
+                    
            }
        
        
 
 function deleteData($data){
-    print_r(explode(",",$data));
-    
-
-
+    echo "<pre>";
+    print_r($data);
+    die;
+    $response = [];
+print_r($data);
     try{
-
+        $idString = implode(",",$data);
+ 
+    
+        $sql = $this->conn->prepare("DELETE FROM tbl_user WHERE id IN ($idString)");
+    
+        $sql->execute();
+        $response["status"] = 200;
+        $response["message"] = "successfully deleted";
     }catch(PDOException $e){
-        echo "error" .$e->getMessage();
+        $response["status"] = 404;
+        $response["message"] = "Record not delete";
     }
-
+   echo json_encode($response);
+    // print_r($response);
 }
 }
 
@@ -149,6 +160,5 @@ if($frmData["action"] == "deleteRow"){
     $obj = new Authcontroller();
     $obj->deleteData($frmData["data"]);
 }
-
 
 

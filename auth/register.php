@@ -275,8 +275,8 @@
               console.log(response["status"])
               if (response["status"] == 200) {
                 // <!-- window.location.href = "../index.php"; -->
-                toastr.error(response["message"])
-                                // window.location.href = "./.php";
+                toastr.success(response["message"])
+                                window.location.href = "../index.php";
             }
             else {
                 toastr.error(response["message"]);
