@@ -27,11 +27,8 @@
 <script>
 //  toastr.success("HI");
 $(document).ready(function (){
-    var arr = [];
+    var selectedIds = [];
     var table = $("#myTable").DataTable({
-
-
-   
 
         ajax:{
             type:"POST",
@@ -51,6 +48,7 @@ $(document).ready(function (){
                 data: "null",
                 defaultContent: "<input type='checkbox' class='boxCheck'>",
                 orderable:false,
+                
                 
                 
         } ,
@@ -80,7 +78,6 @@ $(document).ready(function (){
 
 
 
-
     });
     function myCallbackFunction (updatedCell, updatedRow, oldValue) {
         $.ajax({
@@ -99,12 +96,7 @@ toastr.error(message);
     alert("not");
   }
                                 
-                // console.log(response);
-
-            //    var arr = response;
-            //     // console.log(arr)
-                
-            //     console.log(typeof  arr['message'])
+        
                 
                 table.ajax.reload();
                 
@@ -119,70 +111,54 @@ toastr.error(message);
     });
 
     $('#myTable thead').on('click', '#main-check', function () {
-        var row = $(this).closest('tr');
-        var data_row = table.row(row).data();
-        console.log(data_row);
-
-    var checkboxes = $('.boxCheck', table.rows().nodes());
-    checkboxes.prop('checked', $(this).prop('checked'));
-});
-
-$('#myTable tbody').on('change', '.boxCheck', function () {
- 
-    var allCheckboxes = $('.boxCheck', table.rows().nodes());
-    var mainCheckbox = $('#main-check');
-
-    var allChecked = allCheckboxes.length === allCheckboxes.filter(':checked').length;
-
- 
-    mainCheckbox.prop('checked', allChecked);
-});
-
-
-//     table.on('click', 'tbody .boxCheck', function () {
-//         var data_row = table.row($(this).closest('tr')).data();
-// //   console.log(data_row.id);
-//         if (arr.indexOf(data_row.id) !== -1) {
-//     arr.pop();
-// } else {
-//     arr.push(data_row.id);
-// }
-
-// console.log(arr);
-// // $("#del_id").val(data_row.id);
-// });
-
-$("#deleteBtn").click(function (deletedId) {
-    
-            // var deletedRow = { data: $("#del_id").val() };
-
-            $.ajax({
-                type: "POST",
-                url: "./backend/authcontroller.php",
-                data: JSON.stringify({action:"deleteRow",data:arr}),
-        success: function (response) {
-            // console.log(response);
-
-            // var jsonResponse = JSON.parse(response);
-
-            // var status =jsonResponse.status;
-            // var message =jsonResponse.messsage;
-
-            // if(status = 200){
-            //     toast.success(message);
-            //     alert("work");
-            // }else{
-            //     toast.error(message);
-            //     alert("not");
-            // }
-            table.ajax.reload();
-                
-                },
-                  error: function (error) {
-    
-                }
+        var isChecked = $(this).prop('checked');
+        $('.boxCheck').prop('checked', isChecked);
+        selectedIds = []; // Clear the array before selecting new IDs
+        if (isChecked) {
+            $('.boxCheck').each(function () {
+                selectedIds.push($(this).closest('tr').find('td:eq(1)').text());
             });
+        }
+        console.log(selectedIds);
+    });
+
+    $('#myTable tbody').on('click', '.boxCheck', function () {
+        var isChecked = $(this).prop('checked');
+        var rowId = $(this).closest('tr').find('td:eq(1)').text();
+        if (isChecked) {
+            selectedIds.push(rowId);
+        } else {
+            var index = selectedIds.indexOf(rowId);
+            if (index !== -1) {
+                selectedIds.splice(index, 1);
+            }
+        }
+        console.log(selectedIds);
+    });
+
+    $("#deleteBtn").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "./backend/authcontroller.php",
+            data: JSON.stringify({ action: "deleteRow", data: selectedIds }),
+            contentType: 'application/json', // Specify the content type
+            success: function (response) {
+                var jsonResponse = JSON.parse(response);
+
+                var status =jsonResponse.status;
+                var message =jsonResponse.message;
+                // console.log(status,message);
+                // Handle success response
+                console.log(response);
+                // You might want to update your UI here if necessary
+            },
+            error: function (error) {
+                // Handle error response
+                console.error(error);
+                // You might want to show an error message to the user here
+            }
         });
+    });
 
 
 });   
@@ -192,76 +168,3 @@ $("#deleteBtn").click(function (deletedId) {
 </script>
 </body>
 </html>
-
-<!-- 
-var arr = [];
-
-// Function to update the array when a checkbox is clicked
-function updateArray(data_row_id) {
-    if (arr.indexOf(data_row_id) !== -1) {
-        arr.splice(arr.indexOf(data_row_id), 1); // Remove the ID if already present
-    } else {
-        arr.push(data_row_id); // Add the ID if not present
-    }
-}
-
-// Event handler for individual checkboxes
-table.on('click', 'tbody .boxCheck', function () {
-    var data_row = table.row($(this).closest('tr')).data();
-    var data_row_id = data_row.id;
-
-    updateArray(data_row_id);
-
-    console.log(arr);
-});
-
-// Event handler for header checkbox
-$('#myTable thead').on('click', '#main-check', function () {
-    var checkboxes = $('.boxCheck', table.rows().nodes());
-
-    checkboxes.prop('checked', $(this).prop('checked'));
-
-    arr = []; // Clear the array when the header checkbox is clicked
-
-    if ($(this).prop('checked')) {
-        checkboxes.each(function () {
-            var data_row = table.row($(this).closest('tr')).data();
-            var data_row_id = data_row.id;
-            updateArray(data_row_id);
-        });
-    }
-
-    console.log(arr);
-});
-
-// Event handler for individual checkboxes within tbody
-$('#myTable tbody').on('change', '.boxCheck', function () {
-    var allCheckboxes = $('.boxCheck', table.rows().nodes());
-    var mainCheckbox = $('#main-check');
-
-    var allChecked = allCheckboxes.length === allCheckboxes.filter(':checked').length;
-
-    mainCheckbox.prop('checked', allChecked);
-
-    var data_row = table.row($(this).closest('tr')).data();
-    var data_row_id = data_row.id;
-
-    updateArray(data_row_id);
-
-    console.log(arr);
-}); -->
-
-<!-- $(document).ready(function () {
-    var table = $('#myTable').DataTable();
-
-    $('#myTable thead').on('click', '#main-check', function () {
-        var row = $(this).closest('tr');
-        var data_row = table.row(row).data();
-
-        if (data_row) {
-            console.log(data_row);
-        } else {
-            console.log("Row data is undefined. Check if the row is selected correctly.");
-        }
-    });
-}); -->

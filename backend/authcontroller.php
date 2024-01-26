@@ -100,9 +100,9 @@ class Authcontroller{
        
 
 function deleteData($data){
-    echo "<pre>";
-    print_r($data);
-    die;
+    // echo "<pre>";
+    // print_r($data);
+    // die;
     $response = [];
 print_r($data);
     try{
